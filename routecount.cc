@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <iomanip>
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -219,11 +220,59 @@ num_routes (const Map &map,
 
 // ----------------------------------------------------------------
 
+// Draw an ASCII picture of MAP, with route counts for each
+// intersection starting from (START_X, START_Y).
+//
+void draw_map_with_counts (const Map &map, unsigned start_x, unsigned start_y)
+{
+  unsigned width = map.get_width();
+  unsigned height = map.get_height();
+
+  for (unsigned y = 0; y < height; y++)
+    {
+      if (y > 0)
+	{
+	  for (unsigned vline = 0; vline < 3; vline++)
+	    {
+	      for (unsigned x = 0; x < width; x++)
+		{
+		  if (x > 0)
+		    std::cout << "   ";
+		  if (vline == 1 && (map.get_blocks (x, y) & STREET_VERT))
+		    std::cout << "  X";
+		  else
+		    std::cout << "  |";
+		}
+	      std::cout << '\n';
+	    }
+	}
+
+      for (unsigned x = 0; x < width; x++)
+	{
+	  if (x > 0)
+	    {
+	      if (map.get_blocks (x, y) & STREET_HORIZ)
+		std::cout << "-X-";
+	      else
+		std::cout << "---";
+	    }
+
+	  if (x >= start_x && y >= start_y)
+	    std::cout << std::setw (3) << num_routes (map, start_x, start_y, x, y);
+	  else
+	    std::cout << "***";
+	}
+      std::cout << '\n';
+    }
+}
+
+// ----------------------------------------------------------------
+
 int main (int argc, const char *const *argv)
 {
-  if (argc != 5)
+  if (argc != 5 && argc != 3)
     {
-      std::cerr << "Usage: " << argv[0] << " START_X START_Y END_X END_Y\n";
+      std::cerr << "Usage: " << argv[0] << " START_X START_Y [END_X END_Y]\n";
       exit (0);
     }
   Map map = read_map (std::cin);
@@ -234,11 +283,19 @@ int main (int argc, const char *const *argv)
     std::cout << "  " << coords.x << ", " << coords.y << " = " << streets << '\n';
 
   unsigned start_x = atoi (argv[1]), start_y = atoi (argv[2]);
-  unsigned end_x = atoi (argv[3]), end_y = atoi (argv[4]);
-  unsigned count = num_routes (map, start_x, start_y, end_x, end_y);
 
-  std::cout << "Number of routes from (" << start_x << ", " << start_y << ")"
-	    << " to (" << end_x << ", " << end_y << "): " << count << '\n';
+  if (argc == 5)
+    {
+      unsigned end_x = atoi (argv[3]), end_y = atoi (argv[4]);
+      unsigned count = num_routes (map, start_x, start_y, end_x, end_y);
+
+      std::cout << "Number of routes from (" << start_x << ", " << start_y << ")"
+		<< " to (" << end_x << ", " << end_y << "): " << count << '\n';
+    }
+  else
+    {
+      draw_map_with_counts (map, start_x, start_y);
+    }
 
   return 0;
 }
