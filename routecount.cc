@@ -233,7 +233,8 @@ num_routes (const Map &map,
 // Draw an ASCII picture of MAP, with route counts for each
 // intersection starting from (START_X, START_Y).
 //
-void draw_map_with_counts (const Map &map, unsigned start_x, unsigned start_y)
+void
+draw_map_with_counts (const Map &map, unsigned start_x, unsigned start_y)
 {
   unsigned width = map.get_width();
   unsigned height = map.get_height();
@@ -267,10 +268,17 @@ void draw_map_with_counts (const Map &map, unsigned start_x, unsigned start_y)
 		std::cout << "---";
 	    }
 
-	  if (x >= start_x && y >= start_y)
-	    std::cout << std::setw (3) << num_routes (map, start_x, start_y, x, y);
+	  if (x == 0)
+	    std::cout << std::setfill (' ') << std::setw (3);
 	  else
-	    std::cout << "***";
+	    std::cout << std::setfill ('-') << std::setw (3);
+
+	  if (x == start_x && y == start_y)
+	    std::cout << "@";
+	  else if (x >= start_x && y >= start_y)
+	    std::cout << num_routes (map, start_x, start_y, x, y);
+	  else
+	    std::cout << "+";
 	}
       std::cout << '\n';
     }
