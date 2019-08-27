@@ -122,6 +122,17 @@ private:
   BlockSet blocks;
 };
 
+// Return a new Map read in from the stream IN.
+// The format is:
+//   WIDTH HEIGHT
+//   ISEC_X ISEC_Y INCOMING_BLOCKS
+//   ...
+// where WIDTH and HEIGHT are the integer width and height of the
+// map, ISEC_X and ISEC_Y are the coordinates of an intersection, and
+// INCOMING_BLOCKS is an integer desc which streets
+// into that interseciton are blocked:  1 being the horizontal street
+// to the left, 2 being the vertical street above, and 3 being both.
+//
 Map
 read_map (std::istream &in)
 {
