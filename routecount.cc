@@ -119,7 +119,6 @@ private:
   //
   unsigned width, height;
 
-public:
   BlockSet blocks;
 };
 
@@ -278,9 +277,6 @@ int main (int argc, const char *const *argv)
   Map map = read_map (std::cin);
 
   std::cout << "Map size: " << map.get_width() << ", " << map.get_height() << '\n';
-  std::cout << "Blocks:" << '\n';
-  for (auto &[coords, streets] : map.blocks)
-    std::cout << "  " << coords.x << ", " << coords.y << " = " << streets << '\n';
 
   unsigned start_x = atoi (argv[1]), start_y = atoi (argv[2]);
 
