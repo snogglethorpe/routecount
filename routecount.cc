@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <unordered_set>
 #include <unordered_map>
@@ -286,22 +287,45 @@ draw_map_with_counts (const Map &map, unsigned start_x, unsigned start_y)
 
 // ----------------------------------------------------------------
 
+//
+// Usage: routecount MAP_FILE [START_X START_Y [END_X END_Y]]
+//
+// The map is read in from MAP_FILE, in the format described in the
+// comment for read_map.
+//
+// If all four coordinates are specified, the number of routes between
+// the start and end points is given.  If only the start coordinates
+// are given, a map is output, showing the number of routes from that
+// start-point to all points on the map.  If no coordinates are given
+// a map is output showing the number of routes from (0, 0) to all
+// points on the map.
+//
+
 int main (int argc, const char *const *argv)
 {
-  if (argc != 5 && argc != 3)
+  if (argc != 2 && argc != 4 && argc != 6)
     {
-      std::cerr << "Usage: " << argv[0] << " START_X START_Y [END_X END_Y]\n";
-      exit (0);
+      std::cerr << "Usage: " << argv[0] << " MAP_FILE [ START_X START_Y [END_X END_Y] ]\n";
+      exit (1);
     }
-  Map map = read_map (std::cin);
+
+  std::ifstream map_stream (argv[1]);
+  if (! map_stream)
+    {
+      std::cerr << argv[0] << ": " << argv[1] << ": Cannot open map file\n";
+      exit (2);
+    }
+
+  Map map = read_map (map_stream);
 
   std::cout << "Map size: " << map.get_width() << ", " << map.get_height() << '\n';
 
-  unsigned start_x = atoi (argv[1]), start_y = atoi (argv[2]);
+  unsigned start_x = (argc > 2) ? atoi (argv[2]) : 0;
+  unsigned start_y = (argc > 2) ? atoi (argv[3]) : 0;
 
-  if (argc == 5)
-    {
-      unsigned end_x = atoi (argv[3]), end_y = atoi (argv[4]);
+  if (argc == 5) 
+   {
+      unsigned end_x = atoi (argv[4]), end_y = atoi (argv[5]);
       unsigned count = num_routes (map, start_x, start_y, end_x, end_y);
 
       std::cout << "Number of routes from (" << start_x << ", " << start_y << ")"
